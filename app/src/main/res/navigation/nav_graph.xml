@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/allMoviesFragment">
+
+    <fragment
+        android:id="@+id/allMoviesFragment"
+        android:name="com.fasa.ziptechdevmovieapp.ui.fragments.AllMoviesFragment"
+        android:label="fragment_all_movies"
+        tools:layout="@layout/fragment_all_movies" />
+    <fragment
+        android:id="@+id/searchMoviesFragment"
+        android:name="com.fasa.ziptechdevmovieapp.ui.fragments.SearchMoviesFragment"
+        android:label="fragment_search_movies"
+        tools:layout="@layout/fragment_search_movies" />
+    <fragment
+        android:id="@+id/favouriteMoviesFragment"
+        android:name="com.fasa.ziptechdevmovieapp.ui.fragments.FavouriteMoviesFragment"
+        android:label="fragment_favourite_movies"
+        tools:layout="@layout/fragment_favourite_movies" />
+</navigation>
