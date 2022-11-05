@@ -1,12 +1,24 @@
 package com.fasa.ziptechdevmovieapp.repository
 
 import com.fasa.ziptechdevmovieapp.api.RetrofitInstance
+import com.fasa.ziptechdevmovieapp.database.MoviesDatabase
+import com.fasa.ziptechdevmovieapp.models.Movie
 
-class MoviesRepository() {
+class MoviesRepository(
+    private val db : MoviesDatabase
+) {
 
     suspend fun getMostPopularMovies(page: Int) =
         RetrofitInstance.api.getMostPopularMovies(page = page)
 
     suspend fun searchMovies(queryText: String, page: Int)=
         RetrofitInstance.api.searchMovies(queryText, page)
+
+    suspend fun upsert(movie : Movie) = db.getMovieDao().upsertFavouriteMovie(movie)
+
+    suspend fun deleteFavouriteMovie(movie: Movie) = db.getMovieDao().deleteFavouriteMovie(movie)
+
+    fun getAllFavouriteMovies() = db.getMovieDao().getAllFavouriteMovies()
+
+    suspend fun isInFavourites(movieId: Int) = db.getMovieDao().isInFavourites(movieId)
 }

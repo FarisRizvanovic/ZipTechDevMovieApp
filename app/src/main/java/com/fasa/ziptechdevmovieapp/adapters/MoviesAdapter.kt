@@ -5,23 +5,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.fasa.ziptechdevmovieapp.R
-import com.fasa.ziptechdevmovieapp.models.Result
+import com.fasa.ziptechdevmovieapp.models.Movie
 import com.fasa.ziptechdevmovieapp.util.Constants.Companion.BASE_IMAGE_URL
 
 class MoviesAdapter : RecyclerView.Adapter<MoviesAdapter.MovieViewHolder>() {
 
-    private val differCallback = object : DiffUtil.ItemCallback<Result>() {
-        override fun areItemsTheSame(oldItem: Result, newItem: Result): Boolean {
+    private val differCallback = object : DiffUtil.ItemCallback<Movie>() {
+        override fun areItemsTheSame(oldItem: Movie, newItem: Movie): Boolean {
             return oldItem.id == newItem.id
         }
 
-        override fun areContentsTheSame(oldItem: Result, newItem: Result): Boolean {
+        override fun areContentsTheSame(oldItem: Movie, newItem: Movie): Boolean {
             return oldItem == newItem
         }
     }
@@ -40,6 +39,8 @@ class MoviesAdapter : RecyclerView.Adapter<MoviesAdapter.MovieViewHolder>() {
         )
     }
 
+    private var onItemClickListener: ((Movie) -> Unit)? = null
+
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
         val movie = differ.currentList[position]
@@ -52,10 +53,17 @@ class MoviesAdapter : RecyclerView.Adapter<MoviesAdapter.MovieViewHolder>() {
             findViewById<TextView>(R.id.txt_average_grade).text =
                 "${movie.vote_average} (${movie.vote_count})"
 
+            setOnClickListener {
+                onItemClickListener?.let { it(movie) }
+            }
+
         }
     }
 
     override fun getItemCount(): Int = differ.currentList.size
 
+    fun setOnItemClickListener(listener: (Movie) -> Unit) {
+        onItemClickListener = listener
+    }
 
 }

@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.AbsListView
 import android.widget.Toast
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.fasa.ziptechdevmovieapp.R
@@ -39,6 +40,11 @@ class AllMoviesFragment : Fragment() {
 
         viewModel = (activity as MainActivity).viewModel
         setupRecyclerView()
+
+        moviesAdapter.setOnItemClickListener { movie->
+            val action = AllMoviesFragmentDirections.actionAllMoviesFragmentToMovieDetailsFragment(movie)
+            findNavController().navigate(action)
+        }
 
         viewModel.mostPopularMovies.observe(viewLifecycleOwner, Observer { response ->
             when (response) {

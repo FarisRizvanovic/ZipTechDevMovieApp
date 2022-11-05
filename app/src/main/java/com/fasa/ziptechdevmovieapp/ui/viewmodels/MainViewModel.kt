@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fasa.ziptechdevmovieapp.models.Movie
 import com.fasa.ziptechdevmovieapp.models.MovieResponse
 import com.fasa.ziptechdevmovieapp.repository.MoviesRepository
 import com.fasa.ziptechdevmovieapp.util.Resource
@@ -24,9 +25,25 @@ class MainViewModel(
     var oldSearchQuery: String? = null
     var newSearchQuery: String? = null
 
+
+
     init {
         getMostPopularMovies()
     }
+
+    fun deleteMovie(movie: Movie){
+        viewModelScope.launch {
+            moviesRepository.deleteFavouriteMovie(movie)
+        }
+    }
+
+    fun saveMovie(movie: Movie) {
+        viewModelScope.launch {
+            moviesRepository.upsert(movie)
+        }
+    }
+
+    fun getFavouriteMovies() = moviesRepository.getAllFavouriteMovies()
 
     fun getMostPopularMovies() {
         viewModelScope.launch {
@@ -82,31 +99,5 @@ class MainViewModel(
     }
 
 
-
-//    fun searchMovies(queryText : String) {
-//        viewModelScope.launch {
-//            searchMovies.postValue(Resource.Loading())
-//            val response = moviesRepository.searchMovies(queryText, searchMoviesPage)
-//            searchMovies.postValue(handleSearchMoviesResponse(response))
-//        }
-//    }
-
-//    private fun handleSearchMoviesResponse(response: Response<MovieResponse>): Resource<MovieResponse> {
-//        if (response.isSuccessful) {
-//
-//            response.body()?.let { resultResponse ->
-//                searchMoviesPage++
-//                if (searchMoviesResponse == null) {
-//                    searchMoviesResponse = resultResponse
-//                } else {
-//                    val oldMovies = searchMoviesResponse?.results
-//                    val newMovies = resultResponse.results
-//                    oldMovies?.addAll(newMovies)
-//                }
-//                return Resource.Success(searchMoviesResponse ?: resultResponse)
-//            }
-//        }
-//        return Resource.Error(response.message())
-//    }
 
 }

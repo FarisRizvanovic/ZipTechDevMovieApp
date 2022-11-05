@@ -10,6 +10,7 @@ import android.widget.AbsListView
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.fasa.ziptechdevmovieapp.R
@@ -58,6 +59,11 @@ class SearchMoviesFragment : Fragment() {
                     }
                 }
             }
+        }
+
+        moviesAdapter.setOnItemClickListener { movie->
+            val action = SearchMoviesFragmentDirections.actionSearchMoviesFragmentToMovieDetailsFragment(movie)
+            findNavController().navigate(action)
         }
 
         viewModel.searchMovies.observe(viewLifecycleOwner, Observer { response ->
