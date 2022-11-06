@@ -11,9 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.*
 import com.fasa.ziptechdevmovieapp.R
 import com.fasa.ziptechdevmovieapp.adapters.MoviesAdapter
 import com.fasa.ziptechdevmovieapp.databinding.FragmentFavouriteMoviesBinding
@@ -55,7 +53,7 @@ class FavouriteMoviesFragment : Fragment() {
 
         val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(
             ItemTouchHelper.UP or ItemTouchHelper.DOWN,
-            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+            ItemTouchHelper.LEFT
         ) {
 
 
@@ -125,15 +123,15 @@ class FavouriteMoviesFragment : Fragment() {
         val mBackground = ColorDrawable()
         val backgroundColor = Color.parseColor("#b80f0a")
         val deleteDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_delete)
-        val intrinsicWidth = deleteDrawable!!.intrinsicWidth
-        val intrinsicHeight = deleteDrawable.intrinsicHeight
+        val intrinsicWidth = deleteDrawable!!.intrinsicWidth * 2
+        val intrinsicHeight = deleteDrawable.intrinsicHeight * 2
         val itemView = viewHolder.itemView
         val itemHeight = itemView.height
         val isCancelled = dX == 0f && !isCurrentlyActive
-        if (isCancelled){
+        if (isCancelled) {
             c.drawRect(
-                itemView.right+dX, itemView.top.toFloat(),
-                itemView.right.toFloat(), itemView.bottom.toFloat(),mClearPaint
+                itemView.right + dX, itemView.top.toFloat(),
+                itemView.right.toFloat(), itemView.bottom.toFloat(), mClearPaint
             )
             return
         }
@@ -145,11 +143,11 @@ class FavouriteMoviesFragment : Fragment() {
             itemView.bottom
         )
         mBackground.draw(c)
-        val deleteIconTop = itemView.top + (itemHeight - intrinsicHeight) /2
+        val deleteIconTop = itemView.top + (itemHeight - intrinsicHeight) / 2
         val deleteIconMargin = (itemHeight - intrinsicHeight) / 2
         val deleteIconLeft = itemView.right - deleteIconMargin - intrinsicWidth
         val deleteIconRight = itemView.right - deleteIconMargin
-        val deleteIconBottom = deleteIconTop - intrinsicHeight
+        val deleteIconBottom = deleteIconTop + intrinsicHeight
         deleteDrawable.setBounds(deleteIconLeft, deleteIconTop, deleteIconRight, deleteIconBottom)
         deleteDrawable.draw(c)
     }
@@ -157,6 +155,13 @@ class FavouriteMoviesFragment : Fragment() {
     private fun setupRecyclerView() {
         moviesAdapter = MoviesAdapter()
         binding.favouriteMoviesRecView.apply {
+            itemAnimator = DefaultItemAnimator()
+            addItemDecoration(
+                DividerItemDecoration(
+                    context,
+                    LinearLayoutManager.VERTICAL
+                )
+            )
             adapter = moviesAdapter
             layoutManager = LinearLayoutManager(activity)
         }

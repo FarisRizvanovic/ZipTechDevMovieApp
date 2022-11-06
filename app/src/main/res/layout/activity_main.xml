@@ -21,6 +21,10 @@
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
         app:menu="@menu/menu_bottom"
+        app:itemIconTint="@drawable/selector_colour"
+        app:itemTextAppearanceActive="@color/yellow"
+        app:itemTextColor="@drawable/selector_colour"
+        android:background="@color/purple_200"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent" />
 
