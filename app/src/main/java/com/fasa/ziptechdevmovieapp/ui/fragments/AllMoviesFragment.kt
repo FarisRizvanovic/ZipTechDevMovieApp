@@ -58,6 +58,7 @@ class AllMoviesFragment : Fragment() {
 
         val menu = binding.navigation.menu
 
+
         var job: Job? = null
 
         viewModel.genres.observe(viewLifecycleOwner, Observer { response->
@@ -69,6 +70,7 @@ class AllMoviesFragment : Fragment() {
                             for (genre in genresResponse.genres){
                                 menu.add(1, genre.id, menu.size(), genre.name)
                             }
+                            menu.setGroupCheckable(1, true, false)
                         }
                     }
                 }
@@ -95,6 +97,10 @@ class AllMoviesFragment : Fragment() {
                 genre = id
                 viewModel.getMostPopularMovies(genre)
             }
+
+            binding.moviesRecView.smoothScrollToPosition(0)
+
+
 
             return@setNavigationItemSelectedListener true
         }
