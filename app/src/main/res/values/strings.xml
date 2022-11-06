@@ -9,4 +9,27 @@
     <string name="open">Open</string>
     <string name="close">Close</string>
     <string name="all_genres">All genres</string>
+    <string name="sort_by">Sort by</string>
+    <string name="sort_order">Sort order</string>
+    <string name="popularity">Popularity</string>
+    <string name="descending">Descending</string>
+    <string name="search">Search…</string>
+    <string name="search_for_something">Search for something…</string>
+    <string name="add_to_favourite">Add to favourite</string>
+
+    <string-array name="sort_by">
+        <item>Popularity</item>
+        <item>Release date</item>
+        <item>Revenue</item>
+        <item>Title</item>
+        <item>Vote average</item>
+        <item>Vote count</item>
+    </string-array>
+
+    <string-array name="sort_order">
+        <item>Ascending</item>
+        <item>Descending</item>
+
+    </string-array>
+
 </resources>

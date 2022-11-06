@@ -31,11 +31,12 @@ class MainViewModel(
 
     var shouldReset = false
 
+    var selectedGenre : Int? = null
+
     init {
-        getMostPopularMovies("")
+        getMostPopularMovies("", "popularity.desc")
         getAllGenres()
     }
-
 
 
 
@@ -71,17 +72,15 @@ class MainViewModel(
 
     fun getFavouriteMovies() = moviesRepository.getAllFavouriteMovies()
 
-    fun getMostPopularMovies(genre: String) {
+    fun getMostPopularMovies(genre: String, sortBy:String) {
         viewModelScope.launch {
             if (shouldReset){
                 mostPopularMoviesResponse = null
-                Log.d("OHGOD", "reseting" )
                 shouldReset = false
                 mostPopularMoviesPage = 1
             }
-
             mostPopularMovies.postValue(Resource.Loading())
-            val response = moviesRepository.getMostPopularMovies(genre, mostPopularMoviesPage)
+            val response = moviesRepository.getMostPopularMovies(genre, mostPopularMoviesPage, sortBy)
             mostPopularMovies.postValue(handleMostPopularMoviesResponse(response))
         }
     }

@@ -27,7 +27,6 @@ interface MoviesApi {
     suspend fun searchMovies(
         @Query("query") queryText : String,
         @Query("page") page : Int = 1,
-        @Query("sort_by") sortBy : String = "popularity.desc",
         @Query("api_key") apiKey : String = API_KEY
     ) : Response<MovieResponse>
 }

@@ -8,8 +8,8 @@ class MoviesRepository(
     private val db : MoviesDatabase
 ) {
 
-    suspend fun getMostPopularMovies(genre : String, page: Int) =
-        RetrofitInstance.api.getMostPopularMovies(page = page, genreName = genre)
+    suspend fun getMostPopularMovies(genre : String, page: Int, sortBy:String) =
+        RetrofitInstance.api.getMostPopularMovies(page = page, genreName = genre, sortBy = sortBy)
 
     suspend fun searchMovies(queryText: String, page: Int)=
         RetrofitInstance.api.searchMovies(queryText, page)

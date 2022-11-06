@@ -51,7 +51,7 @@ class MovieDetailsFragment : Fragment() {
 
         val movie = args.movie
 
-        viewModel.checkIfMovieIsInFavourites(movie.id)
+        movie.id?.let { viewModel.checkIfMovieIsInFavourites(it) }
 
         Glide.with(this).load(BASE_IMAGE_URL + movie.poster_path)
             .into(binding.moviePoster)

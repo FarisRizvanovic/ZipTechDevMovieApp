@@ -17,8 +17,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding : ActivityMainBinding
 
-
-
     val viewModel : MainViewModel by lazy {
         val db = MoviesDatabase(this)
         val moviesRepository = MoviesRepository(db)
@@ -31,8 +29,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-
-
 
 
 

@@ -7,7 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AbsListView
+import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -44,6 +46,12 @@ class SearchMoviesFragment : Fragment() {
         _binding = FragmentSearchMoviesBinding.inflate(inflater, container, false)
         val view = binding.root
 
+
+
+        (activity as MainActivity).setSupportActionBar(binding.toolbar)
+        val actionbar = (activity as AppCompatActivity).supportActionBar!!
+        actionbar.title = "Search"
+
         viewModel = (activity as MainActivity).viewModel
         setupRecyclerView()
 
@@ -75,6 +83,8 @@ class SearchMoviesFragment : Fragment() {
 
                         val totalPages = moviesResponse.total_results / Constants.QUERY_PAGE_SIZE + 2
                         isLastPage = viewModel.mostPopularMoviesPage == totalPages
+                        binding.searchPlaceholder.visibility = View.GONE
+                        binding.searchMoviesRecView.smoothScrollToPosition(0)
                     }
                 }
                 is Resource.Error -> {
@@ -151,6 +161,10 @@ class SearchMoviesFragment : Fragment() {
             }
         }
     }
+
+
+
+
 
     override fun onDestroyView() {
         super.onDestroyView()
