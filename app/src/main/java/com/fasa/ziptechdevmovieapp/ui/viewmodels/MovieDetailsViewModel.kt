@@ -16,7 +16,6 @@ class MovieDetailsViewModel(
     fun checkIfMovieIsInFavourites(movieId: Int) {
         viewModelScope.launch {
             val count = moviesRepository.isInFavourites(movieId)
-
             if (count > 0) {
                 isInFavourites.postValue(true)
             } else {

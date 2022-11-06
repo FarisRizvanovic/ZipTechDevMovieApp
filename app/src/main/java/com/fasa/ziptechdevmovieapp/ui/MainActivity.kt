@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
     val viewModel : MainViewModel by lazy {
         val db = MoviesDatabase(this)
         val moviesRepository = MoviesRepository(db)
-        val viewModelProviderFactory = MainViewModelFactory(moviesRepository)
+        val viewModelProviderFactory = MainViewModelFactory(application, moviesRepository)
         ViewModelProvider(this, viewModelProviderFactory)[MainViewModel::class.java]
     }
 

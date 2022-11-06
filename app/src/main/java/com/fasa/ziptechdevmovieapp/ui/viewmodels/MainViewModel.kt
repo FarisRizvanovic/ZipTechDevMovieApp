@@ -1,10 +1,16 @@
 package com.fasa.ziptechdevmovieapp.ui.viewmodels
 
-import android.util.Log
-import android.widget.Toast
+import android.app.Application
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.ConnectivityManager.*
+import android.net.NetworkCapabilities.*
+import android.os.Build
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fasa.ziptechdevmovieapp.MoviesApplication
 import com.fasa.ziptechdevmovieapp.models.GenresResponse
 import com.fasa.ziptechdevmovieapp.models.Movie
 import com.fasa.ziptechdevmovieapp.models.MovieResponse
@@ -12,51 +18,88 @@ import com.fasa.ziptechdevmovieapp.repository.MoviesRepository
 import com.fasa.ziptechdevmovieapp.util.Resource
 import kotlinx.coroutines.launch
 import retrofit2.Response
+import java.io.IOException
 
 class MainViewModel(
+    app: Application,
     private val moviesRepository: MoviesRepository
-) : ViewModel() {
+) : AndroidViewModel(app) {
 
     val mostPopularMovies: MutableLiveData<Resource<MovieResponse>> = MutableLiveData()
     var mostPopularMoviesPage = 1
-    var mostPopularMoviesResponse: MovieResponse? = null
+    private var mostPopularMoviesResponse: MovieResponse? = null
 
     val searchMovies: MutableLiveData<Resource<MovieResponse>> = MutableLiveData()
     var searchMoviesPage = 1
-    var searchMoviesResponse: MovieResponse? = null
-    var oldSearchQuery: String? = null
-    var newSearchQuery: String? = null
+    private var searchMoviesResponse: MovieResponse? = null
 
-    val genres : MutableLiveData<Resource<GenresResponse>> = MutableLiveData()
+    val genres: MutableLiveData<Resource<GenresResponse>> = MutableLiveData()
 
     var shouldReset = false
 
-    var selectedGenre : Int? = null
+    var selectedGenre: Int? = null
+
+    var lastQuery = ""
 
     init {
         getMostPopularMovies("", "popularity.desc")
         getAllGenres()
     }
 
+    /*
+    Save movie to database
+    */
+    fun saveMovie(movie: Movie) {
+        viewModelScope.launch {
+            moviesRepository.upsert(movie)
+        }
+    }
 
+    /*
+    Get favourite movies from database
+    */
+    fun getFavouriteMovies() = moviesRepository.getAllFavouriteMovies()
 
-    fun deleteMovie(movie: Movie){
+    /*
+    Delete movie from favourites database
+    */
+    fun deleteMovie(movie: Movie) {
         viewModelScope.launch {
             moviesRepository.deleteFavouriteMovie(movie)
         }
     }
 
-    fun getAllGenres(){
+    /*
+    Get all available movie genres
+    */
+    private fun getAllGenres() {
         viewModelScope.launch {
             genres.postValue(Resource.Loading())
-            val response = moviesRepository.getAllGenres()
-            genres.postValue(handleGenres(response))
+            safeGetGenres()
         }
     }
 
-    private fun handleGenres(response: Response<GenresResponse>): Resource<GenresResponse>? {
-        if (response.isSuccessful){
-            response.body()?.let { resultResponse->
+    private suspend fun safeGetGenres(){
+        genres.postValue(Resource.Loading())
+        try {
+            if (hasInternetConnection()){
+                val response = moviesRepository.getAllGenres()
+                genres.postValue(handleGenres(response))
+            }else{
+                genres.postValue(Resource.Error("No internet connection!"))
+            }
+
+        }catch (t : Throwable){
+            when (t){
+                is IOException -> genres.postValue(Resource.Error("Network failure!"))
+                else -> genres.postValue(Resource.Error("Conversion error!"))
+            }
+        }
+    }
+
+    private fun handleGenres(response: Response<GenresResponse>): Resource<GenresResponse> {
+        if (response.isSuccessful) {
+            response.body()?.let { resultResponse ->
                 return Resource.Success(resultResponse)
             }
         }
@@ -64,24 +107,37 @@ class MainViewModel(
     }
 
 
-    fun saveMovie(movie: Movie) {
+    /*
+    Get movies (default most popular movies) can be used to search for movies with
+    genres and sorting with filters
+     */
+    fun getMostPopularMovies(genre: String, sortBy: String) {
         viewModelScope.launch {
-            moviesRepository.upsert(movie)
-        }
-    }
-
-    fun getFavouriteMovies() = moviesRepository.getAllFavouriteMovies()
-
-    fun getMostPopularMovies(genre: String, sortBy:String) {
-        viewModelScope.launch {
-            if (shouldReset){
+            if (shouldReset) {
                 mostPopularMoviesResponse = null
                 shouldReset = false
                 mostPopularMoviesPage = 1
             }
-            mostPopularMovies.postValue(Resource.Loading())
-            val response = moviesRepository.getMostPopularMovies(genre, mostPopularMoviesPage, sortBy)
-            mostPopularMovies.postValue(handleMostPopularMoviesResponse(response))
+           safeGetMostPopularMovies(genre, sortBy)
+        }
+    }
+
+    private suspend fun safeGetMostPopularMovies(genre: String, sortBy: String){
+        mostPopularMovies.postValue(Resource.Loading())
+        try {
+            if (hasInternetConnection()){
+                val response =
+                    moviesRepository.getMostPopularMovies(genre, mostPopularMoviesPage, sortBy)
+                mostPopularMovies.postValue(handleMostPopularMoviesResponse(response))
+            }else{
+                mostPopularMovies.postValue(Resource.Error("No internet connection!"))
+            }
+
+        }catch (t : Throwable){
+            when (t){
+                is IOException -> mostPopularMovies.postValue(Resource.Error("Network failure!"))
+                else -> mostPopularMovies.postValue(Resource.Error("Conversion error!"))
+            }
         }
     }
 
@@ -103,21 +159,46 @@ class MainViewModel(
     }
 
 
-    fun searchMovies(queryText : String, resetData: Boolean) {
+    /*
+    Search for movies with movie name
+     */
+    fun searchMovies(queryText: String) {
         viewModelScope.launch {
-            searchMovies.postValue(Resource.Loading())
-            val response = moviesRepository.searchMovies(queryText, searchMoviesPage)
-            searchMovies.postValue(handleSearchMoviesResponse(response, resetData))
+            if (shouldReset) {
+                searchMoviesResponse = null
+                shouldReset = false
+                searchMoviesPage = 1
+            }
+            safeSearchMovies(queryText)
         }
     }
 
-    private fun handleSearchMoviesResponse(response: Response<MovieResponse>, resetData: Boolean): Resource<MovieResponse> {
+    private suspend fun safeSearchMovies(queryText: String){
+        searchMovies.postValue(Resource.Loading())
+        try {
+            if (hasInternetConnection()){
+                val response = moviesRepository.searchMovies(queryText, searchMoviesPage)
+                searchMovies.postValue(handleSearchMoviesResponse(response))
+            }else{
+                searchMovies.postValue(Resource.Error("No internet connection!"))
+            }
+
+        }catch (t : Throwable){
+            when (t){
+                is IOException -> searchMovies.postValue(Resource.Error("Network failure!"))
+                else -> searchMovies.postValue(Resource.Error("Conversion error!"))
+            }
+        }
+    }
+
+    private fun handleSearchMoviesResponse(
+        response: Response<MovieResponse>,
+    ): Resource<MovieResponse> {
         if (response.isSuccessful) {
 
             response.body()?.let { resultResponse ->
                 searchMoviesPage++
-                if (searchMoviesResponse == null || resetData) {
-                    searchMoviesPage = 1
+                if (searchMoviesResponse == null) {
                     searchMoviesResponse = resultResponse
                 } else {
                     val oldMovies = searchMoviesResponse?.results
@@ -130,6 +211,37 @@ class MainViewModel(
         return Resource.Error(response.message())
     }
 
+
+    /*
+    Check for internet connection (supports API below and above 23)
+     */
+    private fun hasInternetConnection(): Boolean {
+        val connectivityManager = getApplication<MoviesApplication>().getSystemService(
+            Context.CONNECTIVITY_SERVICE
+        ) as ConnectivityManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val activeNetwork = connectivityManager.activeNetwork ?: return false
+            val capabilities =
+                connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
+            return when {
+                capabilities.hasTransport(TRANSPORT_WIFI) -> true
+                capabilities.hasTransport(TRANSPORT_CELLULAR) -> true
+                capabilities.hasTransport(TRANSPORT_ETHERNET) -> true
+                else -> false
+            }
+        } else {
+            //For api below 23
+            connectivityManager.activeNetworkInfo?.run {
+                return when (type) {
+                    TYPE_WIFI -> true
+                    TYPE_MOBILE -> true
+                    TYPE_ETHERNET -> true
+                    else -> false
+                }
+            }
+        }
+        return false
+    }
 
 
 }

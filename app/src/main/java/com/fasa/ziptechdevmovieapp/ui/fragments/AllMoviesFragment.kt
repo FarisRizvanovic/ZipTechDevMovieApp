@@ -28,20 +28,20 @@ import kotlinx.coroutines.launch
 
 class AllMoviesFragment : Fragment() {
 
-    val TAG = "AllMoviesFragment"
+    private val TAG = "AllMoviesFragment"
 
     var genre: String = ""
     var sortBy: String = "popularity.desc"
 
-    lateinit var toggle: ActionBarDrawerToggle
+    private lateinit var toggle: ActionBarDrawerToggle
 
     private var _binding: FragmentAllMoviesBinding? = null
     private val binding get() = _binding!!
 
     lateinit var viewModel: MainViewModel
-    lateinit var moviesAdapter: MoviesAdapter
+    private lateinit var moviesAdapter: MoviesAdapter
 
-    lateinit var menu: Menu
+    private lateinit var menu: Menu
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/purple_500"
+    android:background="@color/grey_500"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context=".ui.fragments.FavouriteMoviesFragment">
@@ -15,7 +15,7 @@
         android:fitsSystemWindows="true"
         android:minHeight="?attr/actionBarSize"
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        android:background="@color/purple_500"/>
+        android:background="@color/grey_500"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/favourite_movies_rec_view"

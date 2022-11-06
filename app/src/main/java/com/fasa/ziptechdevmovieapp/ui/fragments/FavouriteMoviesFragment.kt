@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.*
 import com.fasa.ziptechdevmovieapp.R
 import com.fasa.ziptechdevmovieapp.adapters.MoviesAdapter
 import com.fasa.ziptechdevmovieapp.databinding.FragmentFavouriteMoviesBinding
-import com.fasa.ziptechdevmovieapp.databinding.FragmentMovieDetailsBinding
 import com.fasa.ziptechdevmovieapp.ui.MainActivity
 import com.fasa.ziptechdevmovieapp.ui.viewmodels.MainViewModel
 import com.google.android.material.snackbar.Snackbar

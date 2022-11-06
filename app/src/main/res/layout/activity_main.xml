@@ -24,7 +24,7 @@
         app:itemIconTint="@drawable/selector_colour"
         app:itemTextAppearanceActive="@color/yellow"
         app:itemTextColor="@drawable/selector_colour"
-        android:background="@color/purple_200"
+        android:background="@color/grey_200"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent" />
 

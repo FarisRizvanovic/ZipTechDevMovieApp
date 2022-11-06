@@ -7,17 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AbsListView
-import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.fasa.ziptechdevmovieapp.R
 import com.fasa.ziptechdevmovieapp.adapters.MoviesAdapter
-import com.fasa.ziptechdevmovieapp.databinding.FragmentAllMoviesBinding
 import com.fasa.ziptechdevmovieapp.databinding.FragmentSearchMoviesBinding
 import com.fasa.ziptechdevmovieapp.ui.MainActivity
 import com.fasa.ziptechdevmovieapp.ui.viewmodels.MainViewModel
@@ -36,7 +32,7 @@ class SearchMoviesFragment : Fragment() {
     private val binding get() = _binding!!
 
     lateinit var viewModel: MainViewModel
-    lateinit var moviesAdapter: MoviesAdapter
+    private lateinit var moviesAdapter: MoviesAdapter
     private val TAG = "SearchMoviesFragment"
 
     override fun onCreateView(
@@ -45,8 +41,6 @@ class SearchMoviesFragment : Fragment() {
     ): View? {
         _binding = FragmentSearchMoviesBinding.inflate(inflater, container, false)
         val view = binding.root
-
-
 
         (activity as MainActivity).setSupportActionBar(binding.toolbar)
         val actionbar = (activity as AppCompatActivity).supportActionBar!!
@@ -63,7 +57,13 @@ class SearchMoviesFragment : Fragment() {
                 delay(SEARCH_MOVIES_TIME_DELAY)
                 editable?.let {
                     if (editable.toString().isNotEmpty()) {
-                        viewModel.searchMovies(editable.toString(), true)
+                        val lastQuery = viewModel.lastQuery
+                        if (lastQuery != editable.toString()){
+                            viewModel.lastQuery = editable.toString()
+                            viewModel.shouldReset = true
+                            viewModel.searchMovies(editable.toString())
+                        }
+
                     }
                 }
             }
@@ -82,9 +82,8 @@ class SearchMoviesFragment : Fragment() {
                         moviesAdapter.differ.submitList(moviesResponse.results.toList())
 
                         val totalPages = moviesResponse.total_results / Constants.QUERY_PAGE_SIZE + 2
-                        isLastPage = viewModel.mostPopularMoviesPage == totalPages
+                        isLastPage = viewModel.searchMoviesPage == totalPages
                         binding.searchPlaceholder.visibility = View.GONE
-                        binding.searchMoviesRecView.smoothScrollToPosition(0)
                     }
                 }
                 is Resource.Error -> {
@@ -99,9 +98,6 @@ class SearchMoviesFragment : Fragment() {
 
             }
         })
-
-
-
 
         return view
     }
@@ -154,17 +150,13 @@ class SearchMoviesFragment : Fragment() {
             val shouldPaginate =
                 isNotLoadingAndNotLastPage && isAtLastItem && isNotAtBeginning && isTotalMoreThanVisible && isScrolling
             if (shouldPaginate) {
-                viewModel.searchMovies(binding.etSearch.text.toString(), false)
+                viewModel.searchMovies(binding.etSearch.text.toString())
                 isScrolling = false
             } else {
                 binding.searchMoviesRecView.setPadding(0, 0, 0, 0)
             }
         }
     }
-
-
-
-
 
     override fun onDestroyView() {
         super.onDestroyView()

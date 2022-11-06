@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="400dp"
             android:fitsSystemWindows="true"
-            app:contentScrim="@color/purple_500"
+            app:contentScrim="@color/grey_500"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|enterAlways"
             app:title="Details">
 
@@ -56,7 +56,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="-20dp"
-        android:backgroundTint="@color/purple_500"
+        android:backgroundTint="@color/grey_500"
         android:background="@drawable/rounded_collapsing_toolbar"
         android:fillViewport="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">

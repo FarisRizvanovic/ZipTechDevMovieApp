@@ -12,16 +12,25 @@
         tools:layout="@layout/fragment_all_movies" >
         <action
             android:id="@+id/action_allMoviesFragment_to_movieDetailsFragment"
-            app:destination="@id/movieDetailsFragment" />
+            app:destination="@id/movieDetailsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <fragment
         android:id="@+id/searchMoviesFragment"
         android:name="com.fasa.ziptechdevmovieapp.ui.fragments.SearchMoviesFragment"
         android:label="fragment_search_movies"
-        tools:layout="@layout/fragment_search_movies" >
+        tools:layout="@layout/fragment_search_movies"
+        >
         <action
             android:id="@+id/action_searchMoviesFragment_to_movieDetailsFragment"
-            app:destination="@id/movieDetailsFragment" />
+            app:destination="@id/movieDetailsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <fragment
         android:id="@+id/favouriteMoviesFragment"
@@ -30,7 +39,11 @@
         tools:layout="@layout/fragment_favourite_movies" >
         <action
             android:id="@+id/action_favouriteMoviesFragment_to_movieDetailsFragment"
-            app:destination="@id/movieDetailsFragment" />
+            app:destination="@id/movieDetailsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <fragment
         android:id="@+id/movieDetailsFragment"
@@ -39,6 +52,10 @@
         tools:layout="@layout/fragment_movie_details" >
         <argument
             android:name="movie"
-            app:argType="com.fasa.ziptechdevmovieapp.models.Movie" />
+            app:argType="com.fasa.ziptechdevmovieapp.models.Movie"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
 </navigation>

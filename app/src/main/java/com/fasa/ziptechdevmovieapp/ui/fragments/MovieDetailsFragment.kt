@@ -6,7 +6,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -14,13 +13,9 @@ import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.fasa.ziptechdevmovieapp.R
 import com.fasa.ziptechdevmovieapp.database.MoviesDatabase
-import com.fasa.ziptechdevmovieapp.databinding.FragmentAllMoviesBinding
 import com.fasa.ziptechdevmovieapp.databinding.FragmentMovieDetailsBinding
 import com.fasa.ziptechdevmovieapp.repository.MoviesRepository
-import com.fasa.ziptechdevmovieapp.ui.MainActivity
-import com.fasa.ziptechdevmovieapp.ui.viewmodelfactories.MainViewModelFactory
 import com.fasa.ziptechdevmovieapp.ui.viewmodelfactories.MovieDetailsViewModelFactory
-import com.fasa.ziptechdevmovieapp.ui.viewmodels.MainViewModel
 import com.fasa.ziptechdevmovieapp.ui.viewmodels.MovieDetailsViewModel
 import com.fasa.ziptechdevmovieapp.util.Constants.Companion.BASE_IMAGE_URL
 
@@ -39,7 +34,7 @@ class MovieDetailsFragment : Fragment() {
         ViewModelProvider(this, viewModelProviderFactory)[MovieDetailsViewModel::class.java]
     }
 
-    val args: MovieDetailsFragmentArgs by navArgs()
+    private val args: MovieDetailsFragmentArgs by navArgs()
 
     @SuppressLint("SetTextI18n")
     override fun onCreateView(
