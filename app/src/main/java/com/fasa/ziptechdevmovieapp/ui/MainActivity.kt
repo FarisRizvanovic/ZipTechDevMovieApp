@@ -2,6 +2,7 @@ package com.fasa.ziptechdevmovieapp.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
@@ -16,6 +17,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding : ActivityMainBinding
 
+
+
     val viewModel : MainViewModel by lazy {
         val db = MoviesDatabase(this)
         val moviesRepository = MoviesRepository(db)
@@ -28,6 +31,10 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+
+
+
+
 
 
         val navHostFragment = supportFragmentManager

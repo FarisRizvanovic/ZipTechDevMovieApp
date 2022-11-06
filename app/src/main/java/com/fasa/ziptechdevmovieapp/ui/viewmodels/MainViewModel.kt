@@ -1,9 +1,11 @@
 package com.fasa.ziptechdevmovieapp.ui.viewmodels
 
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fasa.ziptechdevmovieapp.models.GenresResponse
 import com.fasa.ziptechdevmovieapp.models.Movie
 import com.fasa.ziptechdevmovieapp.models.MovieResponse
 import com.fasa.ziptechdevmovieapp.repository.MoviesRepository
@@ -25,17 +27,41 @@ class MainViewModel(
     var oldSearchQuery: String? = null
     var newSearchQuery: String? = null
 
+    val genres : MutableLiveData<Resource<GenresResponse>> = MutableLiveData()
 
+    var shouldReset = false
 
     init {
-        getMostPopularMovies()
+        getMostPopularMovies("")
+        getAllGenres()
     }
+
+
+
 
     fun deleteMovie(movie: Movie){
         viewModelScope.launch {
             moviesRepository.deleteFavouriteMovie(movie)
         }
     }
+
+    fun getAllGenres(){
+        viewModelScope.launch {
+            genres.postValue(Resource.Loading())
+            val response = moviesRepository.getAllGenres()
+            genres.postValue(handleGenres(response))
+        }
+    }
+
+    private fun handleGenres(response: Response<GenresResponse>): Resource<GenresResponse>? {
+        if (response.isSuccessful){
+            response.body()?.let { resultResponse->
+                return Resource.Success(resultResponse)
+            }
+        }
+        return Resource.Error(response.message())
+    }
+
 
     fun saveMovie(movie: Movie) {
         viewModelScope.launch {
@@ -45,10 +71,17 @@ class MainViewModel(
 
     fun getFavouriteMovies() = moviesRepository.getAllFavouriteMovies()
 
-    fun getMostPopularMovies() {
+    fun getMostPopularMovies(genre: String) {
         viewModelScope.launch {
+            if (shouldReset){
+                mostPopularMoviesResponse = null
+                Log.d("OHGOD", "reseting" )
+                shouldReset = false
+                mostPopularMoviesPage = 1
+            }
+
             mostPopularMovies.postValue(Resource.Loading())
-            val response = moviesRepository.getMostPopularMovies(mostPopularMoviesPage)
+            val response = moviesRepository.getMostPopularMovies(genre, mostPopularMoviesPage)
             mostPopularMovies.postValue(handleMostPopularMoviesResponse(response))
         }
     }

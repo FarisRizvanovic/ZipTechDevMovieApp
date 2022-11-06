@@ -7,7 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AbsListView
-import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,11 +20,17 @@ import com.fasa.ziptechdevmovieapp.ui.MainActivity
 import com.fasa.ziptechdevmovieapp.ui.viewmodels.MainViewModel
 import com.fasa.ziptechdevmovieapp.util.Constants.Companion.QUERY_PAGE_SIZE
 import com.fasa.ziptechdevmovieapp.util.Resource
-import retrofit2.Response
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 
 class AllMoviesFragment : Fragment() {
 
     val TAG = "AllMoviesFragment"
+
+    var genre : String = ""
+
+    lateinit var toggle : ActionBarDrawerToggle
 
     private var _binding: FragmentAllMoviesBinding? = null
     private val binding get() = _binding!!
@@ -40,6 +47,58 @@ class AllMoviesFragment : Fragment() {
 
         viewModel = (activity as MainActivity).viewModel
         setupRecyclerView()
+
+        (activity as MainActivity).setSupportActionBar(binding.toolbar)
+        val actionbar = (activity as AppCompatActivity).supportActionBar!!
+        actionbar.title = "Most Popular"
+
+        toggle = ActionBarDrawerToggle(requireActivity(), binding.drawerLayout, binding.toolbar,R.string.open, R.string.close)
+        binding.drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+
+        val menu = binding.navigation.menu
+
+        var job: Job? = null
+
+        viewModel.genres.observe(viewLifecycleOwner, Observer { response->
+            when(response){
+                is Resource.Success->{
+                    response.data?.let { genresResponse ->
+                        job?.cancel()
+                        job = MainScope().launch {
+                            for (genre in genresResponse.genres){
+                                menu.add(1, genre.id, menu.size(), genre.name)
+                            }
+                        }
+                    }
+                }
+                is Resource.Error->{
+                    Log.e(TAG, "Genres Error!", )
+                }
+                is Resource.Loading->{
+                    Log.d(TAG, "Genres Loading...")
+                }
+            }
+        })
+
+
+        binding.navigation.setNavigationItemSelectedListener{
+            val title = it.title.toString()
+            val id = it.itemId.toString()
+
+            if (id == R.id.allGenres.toString()){
+                viewModel.shouldReset = true
+                genre = ""
+                viewModel.getMostPopularMovies(genre)
+            }else{
+                viewModel.shouldReset = true
+                genre = id
+                viewModel.getMostPopularMovies(genre)
+            }
+
+            return@setNavigationItemSelectedListener true
+        }
+
 
         moviesAdapter.setOnItemClickListener { movie->
             val action = AllMoviesFragmentDirections.actionAllMoviesFragmentToMovieDetailsFragment(movie)
@@ -94,6 +153,7 @@ class AllMoviesFragment : Fragment() {
 
     }
 
+
     var isLoading = false
     var isLastPage = false
     var isScrolling = false
@@ -121,13 +181,14 @@ class AllMoviesFragment : Fragment() {
             val shouldPaginate =
                 isNotLoadingAndNotLastPage && isAtLastItem && isNotAtBeginning && isTotalMoreThanVisible && isScrolling
             if (shouldPaginate) {
-                viewModel.getMostPopularMovies()
+                viewModel.getMostPopularMovies(genre)
                 isScrolling = false
             } else {
                 binding.moviesRecView.setPadding(0, 0, 0, 0)
             }
         }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

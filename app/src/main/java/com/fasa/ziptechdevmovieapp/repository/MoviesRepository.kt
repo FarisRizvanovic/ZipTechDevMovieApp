@@ -8,11 +8,13 @@ class MoviesRepository(
     private val db : MoviesDatabase
 ) {
 
-    suspend fun getMostPopularMovies(page: Int) =
-        RetrofitInstance.api.getMostPopularMovies(page = page)
+    suspend fun getMostPopularMovies(genre : String, page: Int) =
+        RetrofitInstance.api.getMostPopularMovies(page = page, genreName = genre)
 
     suspend fun searchMovies(queryText: String, page: Int)=
         RetrofitInstance.api.searchMovies(queryText, page)
+
+    suspend fun getAllGenres() = RetrofitInstance.api.getAllGenres()
 
     suspend fun upsert(movie : Movie) = db.getMovieDao().upsertFavouriteMovie(movie)
 
