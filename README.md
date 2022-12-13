@@ -1,6 +1,6 @@
 # ZipTechDevMovieApp
 
-Movie App for searching for movies
+Movie App for searching movies
 ## Features
 
 - Latest movies
